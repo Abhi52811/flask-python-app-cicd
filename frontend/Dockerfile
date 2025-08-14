@@ -1,9 +1,12 @@
 # frontend/Dockerfile
+# SIMPLIFIED: No entrypoint script needed.
 FROM nginx:1.21.6-alpine
+
+# Copy the corrected Nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY entrypoint.sh /
-RUN chmod +x /entrypoint.sh
+
+# Copy the static website files
 COPY index.html /usr/share/nginx/html/
 COPY style.css /usr/share/nginx/html/
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["nginx", "-g", "daemon off;"]
+
+# The base Nginx image will automatically run Nginx. No CMD or ENTRYPOINT needed.

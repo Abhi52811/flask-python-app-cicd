@@ -23,6 +23,9 @@ spec:
         image: us-central1-docker.pkg.dev/delta-sprite-466806-n8/flask-app/backend:latest
         ports:
         - containerPort: 5000
+        env:
+         - name: PORT
+           value: "5000"
         resources:
           requests:
             cpu: "100m"

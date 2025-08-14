@@ -28,11 +28,9 @@
     </div>
 
     <script>
-        const BACKEND_URL = '{{BACKEND_URL_PLACEHOLDER}}';
-
         async function fetchHelloMessage(name = 'Guest') {
             try {
-                const response = await fetch(`${BACKEND_URL}/api/hello?name=${encodeURIComponent(name)}`);
+                const response = await fetch(`/api/hello?name=${encodeURIComponent(name)}`);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 document.getElementById('helloMessage').innerText = data.message;
@@ -50,7 +48,7 @@
             }
 
             try {
-                const response = await fetch(`${BACKEND_URL}/api/names`, {
+                    const response = await fetch(`/api/names`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -76,7 +74,7 @@
 
         async function fetchSavedNames() {
             try {
-                const response = await fetch(`${BACKEND_URL}/api/names`);
+                const response = await fetch(`/api/names`);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 const namesList = document.getElementById('savedNamesList');
