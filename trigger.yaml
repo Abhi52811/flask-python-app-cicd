@@ -1,0 +1,11 @@
+createTime: '2025-08-14T05:56:20.613653186Z'
+filename: cloudbuild.yaml
+id: 5295313c-4ad3-4328-b7af-b6372b530479
+name: deploy-to-gke-on-push
+repositoryEventConfig:
+  push:
+    branch: ^main$
+  repository: projects/delta-sprite-466806-n8/locations/us-central1/connections/Flaska-app-CICD/repositories/Abhi52811-flask-python-app-cicd
+  repositoryType: GITHUB
+resourceName: projects/delta-sprite-466806-n8/locations/us-central1/triggers/5295313c-4ad3-4328-b7af-b6372b530479
+serviceAccount: projects/delta-sprite-466806-n8/serviceAccounts/596476777221-compute@developer.gserviceaccount.com
