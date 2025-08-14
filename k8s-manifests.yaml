@@ -15,6 +15,7 @@ spec:
       labels:
         app: flask-backend
     spec:
+      serviceAccountName: backend-ksa 
       containers:
       - name: flask-backend-container
         # CORRECTED: Use the Artifact Registry path.
