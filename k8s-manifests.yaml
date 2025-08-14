@@ -6,7 +6,7 @@ kind: Deployment
 metadata:
   name: backend-deployment
 spec:
-  replicas: 2  # Run 2 pods for high availability
+  replicas: 2
   selector:
     matchLabels:
       app: flask-backend
@@ -16,18 +16,20 @@ spec:
         app: flask-backend
     spec:
       containers:
-      - name: flask-backend-container # Must match the container name in cloudbuild.yaml
-        # This will be replaced dynamically by Cloud Build using $SHORT_SHA
-        image: gcr.io/$PROJECT_ID/flask-app/backend-$SHORT_SHA
+      - name: flask-backend-container
+        # CORRECTED: Use the Artifact Registry path.
+        # For the very first 'kubectl apply', you might use a public placeholder image here,
+        # but for consistency with the pipeline, this is the correct path.
+        image: us-central1-docker.pkg.dev/delta-sprite-466806-n8/flask-app/backend:latest
         ports:
         - containerPort: 5000
-        resources: # Reserve and limit resources for stability
+        resources:
           requests:
-            cpu: "100m"      # Minimum 0.1 vCPU guaranteed
-            memory: "128Mi"  # Minimum 128MB guaranteed
+            cpu: "100m"
+            memory: "128Mi"
           limits:
-            cpu: "250m"      # Max 0.25 vCPU
-            memory: "256Mi"  # Max 256MB
+            cpu: "250m"
+            memory: "256Mi"
 
 ---
 # ================================
@@ -38,12 +40,12 @@ kind: Service
 metadata:
   name: backend-service
 spec:
-  type: ClusterIP  # Internal service for backend
+  type: ClusterIP
   selector:
     app: flask-backend
   ports:
-  - port: 5000      # Service port
-    targetPort: 5000 # Matches containerPort in backend
+  - port: 5000
+    targetPort: 5000
 
 ---
 # ================================
@@ -54,7 +56,7 @@ kind: Deployment
 metadata:
   name: frontend-deployment
 spec:
-  replicas: 2  # Run 2 pods for HA
+  replicas: 2
   selector:
     matchLabels:
       app: nginx-frontend
@@ -64,9 +66,9 @@ spec:
         app: nginx-frontend
     spec:
       containers:
-      - name: nginx-frontend-container # Must match in cloudbuild.yaml
-        # This will be replaced dynamically by Cloud Build using $SHORT_SHA
-        image: gcr.io/$PROJECT_ID/flask-app/frontend-$SHORT_SHA
+      - name: nginx-frontend-container
+        # CORRECTED: Use the Artifact Registry path.
+        image: us-central1-docker.pkg.dev/delta-sprite-466806-n8/flask-app/frontend:latest
         ports:
         - containerPort: 80
         resources:
@@ -86,7 +88,7 @@ kind: Service
 metadata:
   name: frontend-service
 spec:
-  type: LoadBalancer  # Exposes frontend publicly
+  type: LoadBalancer
   selector:
     app: nginx-frontend
   ports:
