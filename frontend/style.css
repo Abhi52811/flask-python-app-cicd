@@ -1,0 +1,104 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to top */
+    min-height: 100vh;
+    margin: 0;
+    background-color: #e0f2f7; /* Light blue background */
+    padding-top: 50px; /* Space from top */
+}
+
+.container {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
+}
+
+h1 {
+    color: #007bff;
+    margin-bottom: 30px;
+    font-size: 2.5em;
+}
+
+.input-section {
+    margin-bottom: 30px;
+}
+
+input[type="text"] {
+    padding: 12px 15px;
+    margin-right: 10px;
+    border: 1px solid #b3e0ff; /* Light blue border */
+    border-radius: 6px;
+    width: calc(70% - 25px); /* Adjust width for button */
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 12px 25px;
+    background-color: #28a745; /* Green for save */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+.message-section {
+    margin-bottom: 30px;
+}
+
+#helloMessage {
+    font-size: 1.8em;
+    color: #0056b3; /* Darker blue */
+    font-weight: bold;
+}
+
+.names-list-section {
+    text-align: left;
+    margin-top: 40px;
+    border-top: 1px solid #eee;
+    padding-top: 30px;
+}
+
+.names-list-section h2 {
+    color: #333;
+    font-size: 1.5em;
+    margin-bottom: 15px;
+}
+
+#savedNamesList {
+    list-style-type: none;
+    padding: 0;
+    max-height: 250px; /* Limit height for scroll */
+    overflow-y: auto; /* Enable scrolling */
+    border: 1px solid #e0f2f7;
+    border-radius: 8px;
+    background-color: #f8fcfd;
+}
+
+#savedNamesList li {
+    padding: 12px 15px;
+    border-bottom: 1px solid #e0f2f7;
+    font-size: 1.1em;
+    color: #555;
+}
+
+#savedNamesList li:last-child {
+    border-bottom: none;
+}
+
+#savedNamesList li:nth-child(odd) {
+    background-color: #f0f8ff; /* Light stripe */
+}

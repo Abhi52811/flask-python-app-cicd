@@ -1,0 +1,63 @@
+steps:
+# Build the Docker image for the backend
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Build Backend Image'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/flask-app/backend-$SHORT_SHA', '.']
+  dir: './backend'
+
+# Build the Docker image for the frontend
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Build Frontend Image'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/flask-app/frontend-$SHORT_SHA', '.']
+  dir: './frontend'
+
+# Push the backend image
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Push Backend Image'
+  args: ['push', 'gcr.io/$PROJECT_ID/flask-app/backend-$SHORT_SHA']
+
+# Push the frontend image
+- name: 'gcr.io/cloud-builders/docker'
+  id: 'Push Frontend Image'
+  args: ['push', 'gcr.io/$PROJECT_ID/flask-app/frontend-$SHORT_SHA']
+
+# Get GKE credentials
+- name: 'gcr.io/cloud-builders/gcloud'
+  id: 'Get GKE Credentials'
+  entrypoint: 'gcloud'
+  args:
+    - 'container'
+    - 'clusters'
+    - 'get-credentials'
+    - 'web-app-cluster'
+    - '--zone=us-central1-a'
+
+# Update backend deployment
+- name: 'gcr.io/cloud-builders/kubectl'
+  id: 'Update Backend Deployment'
+  args:
+    - 'set'
+    - 'image'
+    - 'deployment/backend-deployment'
+    - 'flask-backend-container=gcr.io/$PROJECT_ID/flask-app/backend-$SHORT_SHA'
+    - '--namespace=default'
+  env:
+    - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+    - 'CLOUDSDK_CONTAINER_CLUSTER=web-app-cluster'
+
+# Update frontend deployment
+- name: 'gcr.io/cloud-builders/kubectl'
+  id: 'Update Frontend Deployment'
+  args:
+    - 'set'
+    - 'image'
+    - 'deployment/frontend-deployment'
+    - 'nginx-frontend-container=gcr.io/$PROJECT_ID/flask-app/frontend-$SHORT_SHA'
+    - '--namespace=default'
+  env:
+    - 'CLOUDSDK_COMPUTE_ZONE=us-central1-a'
+    - 'CLOUDSDK_CONTAINER_CLUSTER=web-app-cluster'
+
+images:
+- 'gcr.io/$PROJECT_ID/flask-app/backend-$SHORT_SHA'
+- 'gcr.io/$PROJECT_ID/flask-app/frontend-$SHORT_SHA'

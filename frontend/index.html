@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello App with DB</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Hello App with Database</h1>
+
+        <div class="input-section">
+            <input type="text" id="nameInput" placeholder="Enter your name">
+            <button onclick="saveName()">Save Name</button>
+        </div>
+
+        <div class="message-section">
+            <p id="helloMessage"></p>
+        </div>
+
+        <div class="names-list-section">
+            <h2>Saved Names:</h2>
+            <ul id="savedNamesList">
+                <li>Loading names...</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'http://localhost:5000'; 
+
+        async function fetchHelloMessage(name = 'Guest') {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/hello?name=${encodeURIComponent(name)}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                document.getElementById('helloMessage').innerText = data.message;
+            } catch (error) {
+                console.error('Error fetching hello message:', error);
+                document.getElementById('helloMessage').innerText = 'Error: Could not connect to backend for hello message.';
+            }
+        }
+
+        async function saveName() {
+            const name = document.getElementById('nameInput').value.trim();
+            if (!name) {
+                alert('Please enter a name to save.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/names`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name: name })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`HTTP error! status: ${response.status}, Details: ${errorData.error || 'Unknown error'}`);
+                }
+
+                const data = await response.json();
+                console.log('Name saved:', data);
+                document.getElementById('nameInput').value = ''; // Clear input
+                fetchSavedNames(); // Refresh the list
+                fetchHelloMessage(name); // Update hello message with the last saved name
+            } catch (error) {
+                console.error('Error saving name:', error);
+                alert(`Failed to save name: ${error.message}`);
+            }
+        }
+
+        async function fetchSavedNames() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/names`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                const namesList = document.getElementById('savedNamesList');
+                namesList.innerHTML = ''; // Clear existing list
+
+                if (data.names && data.names.length > 0) {
+                    data.names.forEach(name => {
+                        const li = document.createElement('li');
+                        li.textContent = name;
+                        namesList.appendChild(li);
+                    });
+                } else {
+                    namesList.innerHTML = '<li>No names saved yet.</li>';
+                }
+            } catch (error) {
+                console.error('Error fetching saved names:', error);
+                document.getElementById('savedNamesList').innerHTML = '<li>Error loading names.</li>';
+            }
+        }
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchHelloMessage(); // Display initial "Hello, Guest"
+            fetchSavedNames(); // Load saved names
+        });
+    </script>
+</body>
+</html>
