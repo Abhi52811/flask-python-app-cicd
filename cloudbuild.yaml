@@ -61,3 +61,6 @@ steps:
 images:
 - 'gcr.io/$PROJECT_ID/flask-app/backend-$SHORT_SHA'
 - 'gcr.io/$PROJECT_ID/flask-app/frontend-$SHORT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
