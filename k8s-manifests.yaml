@@ -18,9 +18,6 @@ spec:
       serviceAccountName: backend-ksa 
       containers:
       - name: flask-backend-container
-        # CORRECTED: Use the Artifact Registry path.
-        # For the very first 'kubectl apply', you might use a public placeholder image here,
-        # but for consistency with the pipeline, this is the correct path.
         image: us-central1-docker.pkg.dev/delta-sprite-466806-n8/flask-app/backend:latest
         ports:
         - containerPort: 5000
@@ -71,7 +68,6 @@ spec:
     spec:
       containers:
       - name: nginx-frontend-container
-        # CORRECTED: Use the Artifact Registry path.
         image: us-central1-docker.pkg.dev/delta-sprite-466806-n8/flask-app/frontend:latest
         ports:
         - containerPort: 80
@@ -98,5 +94,3 @@ spec:
   ports:
   - port: 80
     targetPort: 80
-
-##############################
