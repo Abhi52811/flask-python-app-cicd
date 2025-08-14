@@ -1,0 +1,94 @@
+# ================================
+# 1. Backend Deployment
+# ================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 2  # Run 2 pods for high availability
+  selector:
+    matchLabels:
+      app: flask-backend
+  template:
+    metadata:
+      labels:
+        app: flask-backend
+    spec:
+      containers:
+      - name: flask-backend-container # Must match the container name in cloudbuild.yaml
+        # This will be replaced dynamically by Cloud Build using $SHORT_SHA
+        image: gcr.io/$PROJECT_ID/flask-app/backend-$SHORT_SHA
+        ports:
+        - containerPort: 5000
+        resources: # Reserve and limit resources for stability
+          requests:
+            cpu: "100m"      # Minimum 0.1 vCPU guaranteed
+            memory: "128Mi"  # Minimum 128MB guaranteed
+          limits:
+            cpu: "250m"      # Max 0.25 vCPU
+            memory: "256Mi"  # Max 256MB
+
+---
+# ================================
+# 2. Backend Service (ClusterIP)
+# ================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  type: ClusterIP  # Internal service for backend
+  selector:
+    app: flask-backend
+  ports:
+  - port: 5000      # Service port
+    targetPort: 5000 # Matches containerPort in backend
+
+---
+# ================================
+# 3. Frontend Deployment
+# ================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  replicas: 2  # Run 2 pods for HA
+  selector:
+    matchLabels:
+      app: nginx-frontend
+  template:
+    metadata:
+      labels:
+        app: nginx-frontend
+    spec:
+      containers:
+      - name: nginx-frontend-container # Must match in cloudbuild.yaml
+        # This will be replaced dynamically by Cloud Build using $SHORT_SHA
+        image: gcr.io/$PROJECT_ID/flask-app/frontend-$SHORT_SHA
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+
+---
+# ================================
+# 4. Frontend Service (LoadBalancer)
+# ================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  type: LoadBalancer  # Exposes frontend publicly
+  selector:
+    app: nginx-frontend
+  ports:
+  - port: 80
+    targetPort: 80
